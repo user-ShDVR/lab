@@ -13,24 +13,24 @@ function App() {
     },
     {
       key: "employees",
-      label: "Сотрудники",
+      label: "Продавцы",
       children: <ManagementEmployees />,
     },
     {
       key: "credits",
-      label: "Кредиты",
+      label: "Товары",
       children: <ManagementPledges />,
     },
     {
       key: "contracts",
-      label: "Контракты",
+      label: "Заказы",
       children: <ManagementContracts />,
     },
   ];
 
   return (
     <div style={{ margin: "40px" }}>
-      <Typography.Title>Банковская админ панель</Typography.Title>
+      <Typography.Title>Админ панель</Typography.Title>
       <Tabs defaultActiveKey="1" items={tabs} />
     </div>
   );

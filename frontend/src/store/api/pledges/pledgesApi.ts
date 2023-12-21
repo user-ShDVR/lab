@@ -34,12 +34,12 @@ export const pledgesApi = createApi({
 
     updatePledge: builder.mutation<
       IPledge,
-      { credit_code: number; data: IUpdatePledgeInfoInput }
+      { product_code: number; data: IUpdatePledgeInfoInput }
     >({
-      query: ({ credit_code, data }) => ({
-        url: `credit/${credit_code}`,
+      query: ({ product_code, data }) => ({
+        url: `credit/${product_code}`,
         method: "PATCH",
-        body: { credit_code, ...data },
+        body: { product_code, ...data },
       }),
     }),
 

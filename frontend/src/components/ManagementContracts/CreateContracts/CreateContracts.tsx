@@ -14,13 +14,14 @@ export const CreateContracts: React.FC<CreateContractProps> = ({
 }) => {
   const [createContract, { isLoading }] = useCreateContractMutation();
   const [form] = CreateForm.useForm();
+  
 
   const onCreateContractOk = async () => {
     try {
       const employeeValues: ICreateContractRequest =
         await form.validateFields();
-        employeeValues.contract_amount = parseInt(employeeValues.contract_amount, 10);
-        employeeValues.contract_term = parseInt(employeeValues.contract_term, 10);
+        // employeeValues.contract_amount = parseInt(employeeValues.contract_amount, 10);
+        employeeValues.quanity = parseInt(employeeValues.quanity, 10);
       await createContract(employeeValues);
 
       refetch();
@@ -36,7 +37,7 @@ export const CreateContracts: React.FC<CreateContractProps> = ({
 
   return (
     <Modal
-      title="Добавить контракт"
+      title="Добавить заказ"
       open={open}
       confirmLoading={isLoading}
       onCancel={() => setOpen(false)}
@@ -54,7 +55,7 @@ export const CreateContracts: React.FC<CreateContractProps> = ({
         onFinishFailed={onCreateContractFailed}
         form={form}
       >
-        <FormInputs />
+        <FormInputs form={form} />
       </CreateForm>
     </Modal>
   );

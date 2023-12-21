@@ -25,7 +25,7 @@ export class ContractsService {
   ) {}
   async create(body: CreateContractDto) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isClient, isСredit, isEmployee] = await Promise.all([
+    const [isClient, isProduct, isSeller] = await Promise.all([
       this.checkIfExists(
         'client',
         'client_code',
@@ -33,98 +33,129 @@ export class ContractsService {
         'Клиент не найден, договор не создан',
       ),
       this.checkIfExists(
-        'credit',
-        'credit_code',
-        body.credit_code,
-        'Кредит не найден, договор не создан',
+        'product',
+        'product_code',
+        body.product_code,
+        'Продукт не найден, договор не создан',
       ),
       this.checkIfExists(
-        'employee',
-        'employee_code',
-        body.employee_code,
-        'Работник не найден, договор не создан',
+        'seller',
+        'seller_code',
+        body.seller_code,
+        'Продавец не найден, договор не создан',
       ),
     ]);
-    await this.checkCreditConstraints(
-      isСredit,
-      body.contract_term,
-      body.contract_amount,
-    );
 
-    const monthlyInterestRate = isСredit.interest_rate / 12 / 100;
-    const loanTerm = body.contract_term;
-    const loanAmount = Number(body.contract_amount);
 
-    const monthlyPayment =
-      (loanAmount * monthlyInterestRate) /
-      (1 - Math.pow(1 + monthlyInterestRate, -loanTerm));
+    
+    const productPrice = Number(isProduct.price);
 
-    const contract = await this.db.contract.create({
+    const amount = productPrice * body.quanity
+
+    const order = await this.db.order.create({
       data: {
         client_code: body.client_code,
-        employee_code: body.employee_code,
-        credit_code: body.credit_code,
-        contract_term: body.contract_term,
-        contract_amount: body.contract_amount,
-        monthly_payment: monthlyPayment,
+        seller_code: body.seller_code,
+        product_code: body.product_code,
+        order_amount: amount.toString(),
+        quanity: body.quanity,
+        delivery_date: new Date(body.delivery_date),
+        status: body.status,
+        delivery_method: body.delivery_method,
       },
       include: {
         clients: true,
-        employees: true,
-        credit: true,
+        seller: true,
+        product: true,
       },
     });
-    await this.genPDF.generatePDF(contract);
+    //await this.genPDF.generatePDF(order);
 
-    return contract;
+    return order;
   }
 
   async findAll(startDate: Date, endDate: Date) {
-    const contracts = await this.db.contract.findMany({
+    const orders = await this.db.order.findMany({
       where: {
-        creation_date: {
+        order_date: {
           gte: startDate,
           lte: endDate,
         },
       },
     });
-    return contracts;
+    return orders;
   }
 
   async findOne(id: number) {
-    const contract = await this.db.contract.findFirst({
-      where: { contract_code: id },
+    const order = await this.db.order.findFirst({
+      where: { order_code: id },
     });
-    return contract;
+    return order;
   }
 
   async update(id: number, body: UpdateContractDto) {
-    const updatedСontract = await this.db.contract.update({
-      where: { contract_code: id },
-      data: body,
+
+    const [isClient, isProduct, isSeller] = await Promise.all([
+      this.checkIfExists(
+        'client',
+        'client_code',
+        body.client_code,
+        'Клиент не найден, договор не создан',
+      ),
+      this.checkIfExists(
+        'product',
+        'product_code',
+        body.product_code,
+        'Продукт не найден, договор не создан',
+      ),
+      this.checkIfExists(
+        'seller',
+        'seller_code',
+        body.seller_code,
+        'Продавец не найден, договор не создан',
+      ),
+    ]);
+
+
+    
+    const productPrice = Number(isProduct.price);
+
+    const amount = productPrice * body.quanity
+    const updatedOrder = await this.db.order.update({
+      where: { order_code: id },
+      data: {
+        client_code: body.client_code,
+        seller_code: body.seller_code,
+        product_code: body.product_code,
+        order_amount: amount.toString(),
+        quanity: body.quanity,
+        delivery_date: new Date(body.delivery_date),
+        status: body.status,
+        delivery_method: body.delivery_method,
+      },
       include: {
         clients: true,
-        employees: true,
-        credit: true,
+        seller: true,
+        product: true,
       },
     });
-    if (!updatedСontract) {
-      throw new NotFoundException('Договор не найден');
+    if (!updatedOrder) {
+      throw new NotFoundException('Заказ не найден');
     }
     // await this.genPDF.generatePDF(updatedСontract);
-    return updatedСontract;
+    return updatedOrder;
   }
 
   async remove(id: number) {
-    const contract = await this.db.contract.findUnique({
-      where: { contract_code: id },
+    const order = await this.db.order.findUnique({
+      where: { order_code: id },
     });
 
-    if (contract) {
-      const deletedContract = await this.db.contract.delete({
-        where: { contract_code: id },
+    if (order) {
+      const deletedContract = await this.db.order.delete({
+        where: { order_code: id },
       });
-      return `Договор №${deletedContract.contract_code} успешно удален`;
+      return `Заказ №${deletedContract.order_code} успешно удален`;
     }
     return null;
   }
@@ -138,21 +169,5 @@ export class ContractsService {
       throw new NotFoundException(errorMessage);
     }
     return result;
-  }
-  async checkCreditConstraints(
-    credit: ICredit,
-    contractTerm: number,
-    contractAmount: Decimal,
-  ) {
-    const contractAmountValue: number = Number(contractAmount);
-    if (
-      (credit.min_amount !== null && contractAmountValue < credit.min_amount) ||
-      (credit.max_amount !== null && contractAmountValue > credit.max_amount) ||
-      (credit.min_credit_term !== null &&
-        contractTerm < credit.min_credit_term) ||
-      (credit.max_credit_term !== null && contractTerm > credit.max_credit_term)
-    ) {
-      throw new BadRequestException('Неверные значения для договора');
-    }
   }
 }

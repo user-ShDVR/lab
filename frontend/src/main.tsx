@@ -15,10 +15,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <ConfigProvider
         theme={{
-          algorithm: theme.darkAlgorithm,
+          algorithm: theme.defaultAlgorithm,
           token: {
-            colorPrimary: '#00b96b',
-            borderRadius: 2,
+            colorPrimary: '#880000',
+            borderRadius: 16,
+
+            colorBgContainer: '#fffefc',
           }
         }}
       >

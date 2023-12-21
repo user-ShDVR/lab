@@ -19,8 +19,7 @@ export const CreatePledge: React.FC<CreatePledgeProps> = ({
     try {
       const employeeValues: ICreatePledgeRequest =
         await form.validateFields();
-      employeeValues.min_credit_term = parseInt(employeeValues.min_credit_term, 10);
-      employeeValues.max_credit_term = parseInt(employeeValues.max_credit_term, 10);
+      employeeValues.quanity = parseInt(employeeValues.quanity, 10);
       await createPledge(employeeValues);
       refetch();
       setOpen(false);
@@ -35,7 +34,7 @@ export const CreatePledge: React.FC<CreatePledgeProps> = ({
 
   return (
     <Modal
-      title="Добавить кредит"
+      title="Добавить товар"
       open={open}
       confirmLoading={isLoading}
       onCancel={() => setOpen(false)}

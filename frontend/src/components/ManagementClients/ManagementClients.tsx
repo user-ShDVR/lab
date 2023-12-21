@@ -120,6 +120,15 @@ export const ManagementClients = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      width: "10%",
+      editable: true,
+      sorter: (a: IClient, b: IClient) =>
+        a.email.localeCompare(b.email),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
       title: "Адрес",
       dataIndex: "address",
       width: "16%",
@@ -127,24 +136,7 @@ export const ManagementClients = () => {
       sorter: (a: IClient, b: IClient) => a.address.localeCompare(b.address),
       sortDirections: ["ascend", "descend"],
     },
-    {
-      title: "Зарплата",
-      dataIndex: "salary",
-      width: "13%",
-      editable: true,
-      render: (salary) => `${salary}₽`,
-      sorter: (a: IClient, b: IClient) =>
-        a.salary.localeCompare(b.salary),
-      sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Место работы",
-      dataIndex: "workplace",
-      width: "16%",
-      editable: true,
-      sorter: (a: IClient, b: IClient) => a.workplace.localeCompare(b.workplace),
-      sortDirections: ["ascend", "descend"],
-    },
+
     {
       title: "Номер телефона",
       dataIndex: "phone_number",
@@ -152,22 +144,6 @@ export const ManagementClients = () => {
       editable: true,
       sorter: (a: IClient, b: IClient) =>
         a.phone_number.localeCompare(b.phone_number),
-      sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Дата рождения",
-      dataIndex: "birthday",
-      width: "10%",
-      editable: true,
-      render: (birthday) => formatDate(birthday),
-    },
-    {
-      title: "Паспортные данные",
-      dataIndex: "passport_data",
-      width: "17%",
-      editable: true,
-      sorter: (a: IClient, b: IClient) =>
-        a.passport_data.localeCompare(b.passport_data),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -282,14 +258,14 @@ export const ManagementClients = () => {
             expandedRowRender: (record) => {
               // refetch();
 
-              const totalPayout = record.contract.reduce(
-                (acc, client) => acc + parseFloat(client.monthly_payment),
+              const totalPayout = record.order.reduce(
+                (acc, client) => acc + parseFloat(client.order_amount),
                 0
               );
 
               return (
                 <>
-                  Клиент платит в месяц: <b>{totalPayout.toFixed(2)} ₽</b>
+                  Клиент купил товаров за месяц на сумму: <b>{totalPayout.toFixed(2)} ₽</b>
                 </>
               );
             },

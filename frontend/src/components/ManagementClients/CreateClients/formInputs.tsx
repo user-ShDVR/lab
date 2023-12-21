@@ -49,23 +49,12 @@ export const formInputs = [
     node: <Input />,
   },
   {
-    label: "Место работы",
-    name: "workplace",
+    label: "Email",
+    name: "email",
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите место работы клиента!",
-      },
-    ] as Rule[],
-    node: <Input />,
-  },
-  {
-    label: "Заработная плата",
-    name: "salary",
-    rules: [
-      {
-        required: true,
-        message: "Пожалуйста, введите заработную плату клиента!",
+        message: "Пожалуйста, введите почту клиента!",
       },
     ] as Rule[],
     node: <Input />,
@@ -83,34 +72,6 @@ export const formInputs = [
       <InputMask mask="+7 (999) 999-99-99" maskChar="_">
         {(inputProps) => <Input {...inputProps} />}
       </InputMask>
-    ),
-  },
-  {
-    label: "Паспортные данные",
-    name: "passport_data",
-    rules: [
-      {
-        required: true,
-        message: "Пожалуйста, введите паспортные данные клиента!",
-      },
-    ] as Rule[],
-    node: <Input />,
-  },
-  {
-    label: "Дата рождения",
-    name: "birthday",
-    rules: [
-      {
-        required: true,
-        message: "Пожалуйста, введите дату рождения!",
-      },
-    ] as Rule[],
-    node: (
-      <DatePicker
-        format="YYYY-MM-DD"
-        locale={locale}
-        style={{ width: "100%" }}
-      />
     ),
   },
 ];

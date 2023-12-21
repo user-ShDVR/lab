@@ -54,11 +54,11 @@ export const ManagementContracts = () => {
     try {
       const row = await form.validateFields();
       const newData = [...contractsData];
-      const index = newData.findIndex((item) => key === item.contract_code);
+      const index = newData.findIndex((item) => key === item.order_code);
 
       if (index > -1) {
         const item = newData[index];
-        await updateContract({ contract_code: item.contract_code, data: row });
+        await updateContract({ order_code: item.order_code, data: row });
 
         setEditingKey("");
         refetch();
@@ -66,7 +66,7 @@ export const ManagementContracts = () => {
         newData.push(row);
         const item = newData[index];
 
-        await updateContract({ contract_code: item.contract_code, data: row });
+        await updateContract({ order_code: item.order_code, data: row });
         setEditingKey("");
       }
     } catch (errInfo) {
@@ -77,11 +77,11 @@ export const ManagementContracts = () => {
   const handleDelete = async (key: string) => {
     const dataSource = [...contractsData];
     const contractToDelete = dataSource.find(
-      (item) => item.contract_code === key
+      (item) => item.order_code === key
     );
 
     try {
-      await deleteContract(contractToDelete.contract_code.toString());
+      await deleteContract(contractToDelete.order_code.toString());
       await refetch();
     } catch (error) {
       console.error("Error deleting contract:", error);
@@ -115,14 +115,14 @@ export const ManagementContracts = () => {
           (pledgesData &&
             searchRegex.test(
               pledgesData.find(
-                (pledge) => pledge.credit_code === contract.credit_code
-              )?.description
+                (pledge) => pledge.product_code === contract.product_code
+              )?.product_name
             )) ||
           (employeesData &&
             searchRegex.test(
               employeesData.find(
-                (employee) => employee.employee_code === contract.employee_code
-              )?.full_name
+                (employee) => employee.seller_code === contract.seller_code
+              )?.surname
             ))
         );
       })
@@ -131,69 +131,93 @@ export const ManagementContracts = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "contract_code",
+      dataIndex: "order_code",
       width: "1%",
       sorter: (a: IContract, b: IContract) => {
-        const codeA = a.contract_code?.toString() || "";
-        const codeB = b.contract_code?.toString() || "";
+        const codeA = a.order_code?.toString() || "";
+        const codeB = b.order_code?.toString() || "";
         return codeA.localeCompare(codeB);
       },
       sortDirections: ["ascend", "descend"],
     },
-
     {
-      title: "Сумма кредита",
-      dataIndex: "contract_amount",
+      title: "Количество продукта",
+      dataIndex: "quanity",
       width: "10%",
       editable: true,
-      render: (contract_amount) => `${contract_amount}₽`,
+      render: (quanity) => `${quanity} шт.`,
     },
     {
-      title: "Срок кредитования (в месяцах)",
-      dataIndex: "contract_term",
+      title: "Сумма заказа",
+      dataIndex: "order_amount",
       width: "10%",
       editable: true,
+      render: (order_amount) => `${order_amount}₽`,
     },
     {
-      title: "Размер ежемесячного платежа",
-      dataIndex: "monthly_payment",
+      title: "Дата заказа",
+      dataIndex: "order_date",
+      width: "10%",
+      editable: true,
+      render: (order_date) => `${new Date(order_date).toLocaleDateString()}`,
+    },
+    {
+      title: "Дата доставки",
+      dataIndex: "delivery_date",
       width: "8%",
       editable: true,
-      render: (monthly_payment) => `${monthly_payment}₽`,
+      render: (delivery_date) => `${new Date(delivery_date).toLocaleDateString()}`,
     },
     {
-      title: "Тип кредита",
-      dataIndex: "credit_code",
-      width: "20%",
+      title: "Метод доставки",
+      dataIndex: "delivery_method",
+      width: "8%",
       editable: true,
-      render: (creditCode: IPledge | number) => {
-        const pledge = pledgesData?.find(
-          (emp) => emp.credit_code === creditCode
-        );
-        return pledge?.credit_name || creditCode;
-      },
     },
     {
-      title: "Сотрудник",
-      dataIndex: "employee_code",
-      width: "20%",
+      title: "Статус заказа",
+      dataIndex: "status",
+      width: "8%",
+      editable: true,
+    },
+    {
+      title: "Товар",
+      dataIndex: "product_code",
+      width: "15%",
+      editable: true,
+      render: (productCode: IClient | number) => {
+        const product = pledgesData?.find(
+          (emp) => emp.product_code === productCode
+        );
+        return `${product?.product_name}` || productCode;
+      },
+
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: "Покупатель",
+      dataIndex: "client_code",
+      width: "15%",
+      editable: true,
+      render: (clientCode: IClient | number) => {
+        const client = clientsData?.find(
+          (emp) => emp.client_code === clientCode
+        );
+        return `${client?.surname} ${client?.name} ${client?.lastname}` || clientCode;
+      },
+
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: "Продавец",
+      dataIndex: "seller_code",
+      width: "15%",
       editable: true,
       render: (employeeCode: IClient | number) => {
         const employee = employeesData?.find(
-          (emp) => emp.employee_code === employeeCode
+          (emp) => emp.seller_code === employeeCode
         );
         return `${employee?.surname} ${employee?.name} ${employee?.lastname}` || employeeCode;
-      },
-      sorter: (a: IContract, b: IContract) => {
-        const aEmployee = employeesData?.find(
-          (emp) => emp.employee_code === a.employee_code
-        );
-        const bEmployee = employeesData?.find(
-          (emp) => emp.employee_code === b.employee_code
-        );
-        return (aEmployee?.full_name || a.employee_code).localeCompare(
-          bEmployee?.full_name || b.employee_code
-        );
       },
       sortDirections: ["ascend", "descend"],
     },
@@ -231,20 +255,20 @@ export const ManagementContracts = () => {
             </Button> */}
 
             <Popconfirm
-              title="Уверены что хотите удалить предмет залога?"
+              title="Уверены что хотите удалить заказ?"
               onConfirm={() => handleDelete(record.key)}
             >
               <Button>Удалить</Button>
             </Popconfirm>
 
-            <Button type="primary">
+            {/* <Button type="primary">
               <Link
                 target="_blank"
                 to={`http://localhost:3000/uploads/${record.contract_code}.pdf`}
               >
                 Экспортировать
               </Link>
-            </Button>
+            </Button> */}
           </ActionsTableWrapper>
         );
       },
@@ -290,7 +314,7 @@ export const ManagementContracts = () => {
           bordered
           dataSource={filteredData.map((contract) => ({
             ...contract,
-            key: contract.contract_code,
+            key: contract.order_code,
           }))}
           columns={mergedColumns}
           pagination={false}

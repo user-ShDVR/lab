@@ -12,41 +12,31 @@ export class ClientsService {
   constructor(private db: PrismaService) {}
   async create(body: CreateClientDto) {
     const checkExistPassport = await this.db.client.findFirst({
-      where: { passport_data: body?.passport_data },
+      where: { phone_number: body?.phone_number },
     });
     if (checkExistPassport) {
-      throw new ConflictException('Клиент с таким паспортом существует');
+      throw new ConflictException('Клиент с таким номером телефона существует');
     }
 
     const client = await this.db.client.create({
-      data: {
-        surname: body.surname,
-        name: body.name,
-        lastname: body.lastname,
-        birthday: new Date(body.birthday),
-        passport_data: body.passport_data,
-        salary: body.salary,
-        workplace: body.workplace,
-        address: body.address,
-        phone_number: body.phone_number,
-      },
+      data: {...body},
     });
 
     return client;
   }
 
   async findAll() {
-    const clientsWithSums = await this.db.client.findMany({
+    const clientsWithOrders = await this.db.client.findMany({
       include: {
-        contract: {
+        order: {
           select: {
-            monthly_payment: true,
+            order_amount: true,
           },
         },
       },
     });
 
-    return clientsWithSums;
+    return clientsWithOrders;
   }
 
   async findOne(id: number) {
@@ -63,20 +53,10 @@ export class ClientsService {
   async update(id: number, body: UpdateClientDto) {
     const updatedUser = await this.db.client.update({
       where: { client_code: id },
-      data: {
-        surname: body.surname,
-        name: body.name,
-        lastname: body.lastname,
-        birthday: new Date(body.birthday),
-        passport_data: body.passport_data,
-        salary: body.salary,
-        workplace: body.workplace,
-        address: body.address,
-        phone_number: body.phone_number,
-      },
+      data: {...body},
     });
     if (!updatedUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Клиент не найден');
     }
     return updatedUser;
   }
@@ -84,15 +64,15 @@ export class ClientsService {
   async remove(id: number) {
     const client = await this.db.client.findUnique({
       where: { client_code: id },
-      include: { contract: true },
+      include: { order: true },
     });
 
     if (client) {
-      if (client.contract.length > 0) {
+      if (client.order.length > 0) {
         throw new ConflictException(
           `Клиент ${
             client.surname + ' ' + client.name
-          } имеет активные кредиты. Его нельзя удалить. (Сначала удалите кредиты связанные с этим клиентом)`,
+          } имеет активные заказы. Его нельзя удалить. (Сначала удалите заказы связанные с этим клиентом)`,
         );
       }
 
@@ -101,7 +81,7 @@ export class ClientsService {
       });
       return `Клиент ${
         deletedClient.surname + ' ' + deletedClient.name
-      } успешно удален, и кредиты, связанные с ним, также удалены.`;
+      } успешно удален, и заказы, связанные с ним, также удалены.`;
     }
 
     throw new NotFoundException(`Клиент ${id} не найден.`);

@@ -34,7 +34,7 @@ export const CreateEmployees: React.FC<CreateEmployeeProps> = ({
 
   return (
     <Modal
-      title="Добавить сотрудника"
+      title="Добавить продавца"
       open={open}
       confirmLoading={isLoading}
       onCancel={() => setOpen(false)}

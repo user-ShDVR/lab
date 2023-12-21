@@ -6,17 +6,20 @@ export class CreateContractDto {
   client_code: number;
 
   @ApiProperty({ example: 1 })
-  employee_code: number;
+  seller_code: number;
 
   @ApiProperty({ example: 1 })
-  credit_code: number;
+  product_code: number;
 
-  @ApiProperty({ example: 1300000 })
-  contract_amount: Decimal;
+  @ApiProperty({ example: 'Собирается' })
+  status: string;
 
-  @ApiProperty({ example: 60 })
-  contract_term: number;
+  @ApiProperty({ example: 'Самовывоз' })
+  delivery_method: string;
 
-  @ApiProperty({ example: 22776 })
-  monthly_payment: Decimal;
+  @ApiProperty({ example: '2023-12-31' })
+  delivery_date: string;
+
+  @ApiProperty({ example: 1 })
+  quanity: number;
 }

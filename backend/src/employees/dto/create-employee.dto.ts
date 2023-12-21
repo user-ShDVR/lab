@@ -1,24 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Length } from 'class-validator';
+import { IsEmail, IsString, Length } from 'class-validator';
 
 export class CreateEmployeeDto {
-  @ApiProperty({ example: 'Зулина' })
+  @ApiProperty({ example: 'Игорь' })
   @IsString()
-  @Length(3, 20, { message: 'Длина должна быть от 3 до 20 символов' })
+  @Length(2, 50, { message: 'Длина должна быть от 2 до 50 символов' })
   surname: string;
-  @ApiProperty({ example: 'Наталья' })
+  @ApiProperty({ example: 'Сидоров' })
   @IsString()
-  @Length(3, 15, { message: 'Длина должна быть от 3 до 15 символов' })
+  @Length(2, 50, { message: 'Длина должна быть от 2 до 50 символов' })
   name: string;
-  @ApiProperty({ example: 'Евгеньевна' })
+  @ApiProperty({ example: 'Владимирович' })
   @IsString()
-  @Length(3, 20, { message: 'Длина должна быть от 3 до 20 символов' })
+  @Length(2, 50, { message: 'Длина должна быть от 2 до 50 символов' })
   lastname: string;
-  @ApiProperty({ example: 'Сотрудник кредитного отдела' })
-  @IsString()
-  @Length(1, 50, { message: 'Длина должна быть до 50 символов' })
-  position: string;
-  @ApiProperty({ example: '(982)736-45-93' })
+  @ApiProperty({ example: 'igor.sidorov@example.com' })
+  @IsEmail()
+  email: string;
+  @ApiProperty({ example: '(922)771-13-37' })
   @IsString()
   phone_number?: string;
 }

@@ -10,7 +10,7 @@ export const formInputs = [
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите фамилию сотрудника!",
+        message: "Пожалуйста, введите фамилию продавца!",
       },
     ] as Rule[],
     node: <Input />,
@@ -21,7 +21,7 @@ export const formInputs = [
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите имя сотрудника!",
+        message: "Пожалуйста, введите имя продавца!",
       },
     ] as Rule[],
     node: <Input />,
@@ -32,7 +32,7 @@ export const formInputs = [
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите отчество сотрудника!",
+        message: "Пожалуйста, введите отчество продавца!",
       },
     ] as Rule[],
     node: <Input />,
@@ -43,7 +43,7 @@ export const formInputs = [
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите номер телефона сотрудника!",
+        message: "Пожалуйста, введите номер телефона продавца!",
       },
     ] as Rule[],
     node: (
@@ -53,12 +53,12 @@ export const formInputs = [
     ),
   },
   {
-    label: "Должность",
-    name: "position",
+    label: "Email",
+    name: "email",
     rules: [
       {
         required: true,
-        message: "Пожалуйста, введите должность сотрудника!",
+        message: "Пожалуйста, введите почту продавца!",
       },
     ] as Rule[],
     node: <Input />,

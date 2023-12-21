@@ -43,11 +43,11 @@ export const ManagementEmployees = () => {
     try {
       const row = await form.validateFields();
       const newData = [...employeesData];
-      const index = newData.findIndex((item) => key === item.employee_code);
+      const index = newData.findIndex((item) => key === item.seller_code);
 
       if (index > -1) {
         const item = newData[index];
-        await updateEmployee({ employee_code: item.employee_code, data: row });
+        await updateEmployee({ seller_code: item.seller_code, data: row });
 
         setEditingKey("");
         refetch();
@@ -55,7 +55,7 @@ export const ManagementEmployees = () => {
         newData.push(row);
         const item = newData[index];
 
-        await updateEmployee({ employee_code: item.employee_code, data: row });
+        await updateEmployee({ seller_code: item.seller_code, data: row });
         setEditingKey("");
       }
     } catch (errInfo) {
@@ -66,11 +66,11 @@ export const ManagementEmployees = () => {
   const handleDelete = async (key: string) => {
     const dataSource = [...employeesData];
     const employeeToDelete = dataSource.find(
-      (item) => item.employee_code === key
+      (item) => item.seller_code === key
     );
 
     try {
-      await deleteEmployee(employeeToDelete.employee_code.toString());
+      await deleteEmployee(employeeToDelete.seller_code.toString());
       await refetch();
     } catch (error) {
       console.error("Error deleting employee:", error);
@@ -100,11 +100,11 @@ export const ManagementEmployees = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "employee_code",
+      dataIndex: "seller_code",
       width: "2%",
       sorter: (a: IEmployee, b: IEmployee) => {
-        const aCode = String(a.employee_code);
-        const bCode = String(b.employee_code);
+        const aCode = String(a.seller_code);
+        const bCode = String(b.seller_code);
         return aCode.localeCompare(bCode);
       },
       sortDirections: ["ascend", "descend"],
@@ -137,21 +137,21 @@ export const ManagementEmployees = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      width: "15%",
+      editable: true,
+      sorter: (a: IEmployee, b: IEmployee) =>
+        a.email.localeCompare(b.email),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
       title: "Номер телефона",
       dataIndex: "phone_number",
       width: "15%",
       editable: true,
       sorter: (a: IEmployee, b: IEmployee) =>
         a.phone_number.localeCompare(b.phone_number),
-      sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Должность",
-      dataIndex: "position",
-      width: "15%",
-      editable: true,
-      sorter: (a: IEmployee, b: IEmployee) =>
-        a.position.localeCompare(b.position),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -188,7 +188,7 @@ export const ManagementEmployees = () => {
             </Button>
 
             <Popconfirm
-              title="Уверены что хотите удалить сотрудника?"
+              title="Уверены что хотите удалить продавца?"
               onConfirm={() => handleDelete(record.key)}
             >
               <Button>Удалить</Button>
@@ -218,7 +218,7 @@ export const ManagementEmployees = () => {
     <>
       <ManageButtonsWrapper>
         <Button loading={isDeleteLoading} onClick={() => setOpen(true)}>
-          Добавить сотрудника
+          Добавить продавца
         </Button>
 
         <Input
@@ -238,7 +238,7 @@ export const ManagementEmployees = () => {
           bordered
           dataSource={filteredData.map((employee) => ({
             ...employee,
-            key: employee.employee_code,
+            key: employee.seller_code,
           }))}
           columns={mergedColumns}
           pagination={false}

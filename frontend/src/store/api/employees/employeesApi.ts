@@ -35,12 +35,12 @@ export const employeesApi = createApi({
 
     updateEmployee: builder.mutation<
       IEmployee,
-      { employee_code: number; data: IUpdateEmployeeInfoInput }
+      { seller_code: number; data: IUpdateEmployeeInfoInput }
     >({
-      query: ({ employee_code, data }) => ({
-        url: `employees/${employee_code}`,
+      query: ({ seller_code, data }) => ({
+        url: `employees/${seller_code}`,
         method: "PATCH",
-        body: { employee_code, ...data },
+        body: { seller_code, ...data },
       }),
     }),
 

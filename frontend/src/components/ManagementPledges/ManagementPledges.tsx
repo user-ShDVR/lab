@@ -44,18 +44,22 @@ export const ManagementPledges = () => {
     try {
       const row = await form.validateFields();
       const newData = [...pledgesData];
-      const index = newData.findIndex((item) => key === item.credit_code);
-
+      const index = newData.findIndex((item) => key === item.product_code);
+  
       if (index > -1) {
-        const item = newData[index];
-        await updatePledge({ credit_code: item.credit_code, data: row });
+        const item = { ...row }; // Create a new object
+        // Parse quanity as a number
+        item.quanity = parseInt(row.quanity, 10);
+        await updatePledge({ product_code: key, data: item });
         setEditingKey("");
         refetch();
       } else {
+        // If the index is not found, add a new row
         newData.push(row);
-        const item = newData[index];
-
-        await updatePledge({ credit_code: item.credit_code, data: row });
+        const newItem = { ...newData[newData.length - 1] }; // Create a new object
+        // Parse quanity as a number
+        newItem.quanity = parseInt(row.quanity, 10);
+        await updatePledge({ product_code: newItem.product_code, data: newItem });
         setEditingKey("");
       }
     } catch (errInfo) {
@@ -65,10 +69,10 @@ export const ManagementPledges = () => {
 
   const handleDelete = async (key: string) => {
     const dataSource = [...pledgesData];
-    const pledgeToDelete = dataSource.find((item) => item.credit_code === key);
+    const pledgeToDelete = dataSource.find((item) => item.product_code === key);
 
     try {
-      await deletePledge(pledgeToDelete.credit_code.toString());
+      await deletePledge(pledgeToDelete.product_code.toString());
       await refetch();
     } catch (error) {
       console.error("Error deleting pledge:", error);
@@ -78,11 +82,11 @@ export const ManagementPledges = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "credit_code",
+      dataIndex: "product_code",
       width: "1%",
       sorter: (a: IPledge, b: IPledge) => {
-        if (!isNaN(Number(a.credit_code)) && !isNaN(Number(b.credit_code))) {
-          return Number(a.credit_code) - Number(b.credit_code);
+        if (!isNaN(Number(a.product_code)) && !isNaN(Number(b.product_code))) {
+          return Number(a.product_code) - Number(b.product_code);
         } else {
           return 0; // Handle non-numeric values appropriately
         }
@@ -91,46 +95,28 @@ export const ManagementPledges = () => {
     },
     {
       title: "Название",
-      dataIndex: "credit_name",
+      dataIndex: "product_name",
       width: "15%",
       editable: true,
       sorter: (a: IPledge, b: IPledge) =>
-        a.credit_name.localeCompare(b.credit_name),
+        a.product_name.localeCompare(b.product_name),
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Минимальная сумма кредита",
-      dataIndex: "min_amount",
+      title: "Цена",
+      dataIndex: "price",
       width: "10%",
       editable: true,
-      render: (min_amount) => `${min_amount}₽`,
+      render: (price) => `${price}₽`,
     },
     {
-      title: "Максимальная сумма кредита",
-      dataIndex: "max_amount",
+      title: "Количество",
+      dataIndex: "quanity",
       width: "10%",
       editable: true,
-      render: (max_amount) => `${max_amount}₽`,
+      render: (quanity) => `${quanity} шт.`,
     },
-    {
-      title: "Минимальный срок кредитования (в месяцах)",
-      dataIndex: "min_credit_term",
-      width: "18%",
-      editable: true,
-    },
-    {
-      title: "Максимальный срок кредитования(в месяцах)",
-      dataIndex: "max_credit_term",
-      width: "18%",
-      editable: true,
-    },
-    {
-      title: "Процентная ставка",
-      dataIndex: "interest_rate",
-      width: "10%",
-      editable: true,
-      render: (interest_rate) => `${interest_rate}%`,
-    },
+    
     {
       title: "Действия",
       dataIndex: "operation",
@@ -165,7 +151,7 @@ export const ManagementPledges = () => {
             </Button>
 
             <Popconfirm
-              title="Уверены что хотите удалить предмет залога?"
+              title="Уверены что хотите удалить продукт?"
               onConfirm={() => handleDelete(record.key)}
             >
               <Button>Удалить</Button>
@@ -199,7 +185,7 @@ export const ManagementPledges = () => {
     ? pledgesData.filter((pledge) => {
         const searchRegex = new RegExp(searchValue, "i");
         return (
-          searchRegex.test(pledge.credit_name)
+          searchRegex.test(pledge.product_code)
         );
       })
     : [];
@@ -208,7 +194,7 @@ export const ManagementPledges = () => {
     <>
       <ManageButtonsWrapper>
         <Button loading={isDeleteLoading} onClick={() => setOpen(true)}>
-          Добавить кредит
+          Добавить товар
         </Button>
 
         <Input
@@ -228,7 +214,7 @@ export const ManagementPledges = () => {
           bordered
           dataSource={filteredData.map((pledge) => ({
             ...pledge,
-            key: pledge.credit_code,
+            key: pledge.product_code,
           }))}
           columns={mergedColumns}
           pagination={false}

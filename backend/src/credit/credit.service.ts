@@ -11,57 +11,55 @@ import { PrismaService } from 'src/utils/prisma.service';
 export class CreditService {
   constructor(private db: PrismaService) {}
   async create(body: CreateCreditDto) {
-    const credit = await this.db.credit.create({
-      data: {
-        ...body,
-      },
+    const product = await this.db.product.create({
+      data: body,
     });
 
-    return credit;
+    return product;
   }
 
   async findAll() {
-    const credits = await this.db.credit.findMany();
-    return credits;
+    const products = await this.db.product.findMany();
+    return products;
   }
 
   async findOne(id: number) {
-    const credit = await this.db.credit.findFirst({
-      where: { credit_code: id },
+    const product = await this.db.product.findFirst({
+      where: { product_code: id },
     });
-    return credit;
+    return product;
   }
 
   async update(id: number, body: UpdateCreditDto) {
-    const updatedCredit = await this.db.credit.update({
-      where: { credit_code: id },
+    const updatedProduct = await this.db.product.update({
+      where: { product_code: id },
       data: body,
     });
-    if (!updatedCredit) {
-      throw new NotFoundException('Credit not found');
+    if (!updatedProduct) {
+      throw new NotFoundException('Продукт не найден');
     }
-    return updatedCredit;
+    return updatedProduct;
   }
 
   async remove(id: number) {
-    const credit = await this.db.credit.findUnique({
-      where: { credit_code: id },
-      include: { contract: true },
+    const product = await this.db.product.findUnique({
+      where: { product_code: id },
+      include: { order: true },
     });
 
-    if (credit) {
-      if (credit.contract.length > 0) {
+    if (product) {
+      if (product.order.length > 0) {
         throw new ConflictException(
-          `Кредит ${credit.credit_name} имеет активные договоры. Его нельзя удалить. (Сначала удалите договоры связанные с этим кредитом)`,
+          `Продукт ${product.product_name} имеет активные заказы. Его нельзя удалить. (Сначала удалите заказы связанные с этим продуктом)`,
         );
       }
 
-      const deletedСredit = await this.db.credit.delete({
-        where: { credit_code: id },
+      const deletedProduct = await this.db.product.delete({
+        where: { product_code: id },
       });
-      return `Кредит ${deletedСredit.credit_name} успешно удален.`;
+      return `Продукт ${deletedProduct.product_name} успешно удален.`;
     }
 
-    throw new NotFoundException(`Кредит ${id} не найден.`);
+    throw new NotFoundException(`Продукт ${id} не найден.`);
   }
 }

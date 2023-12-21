@@ -11,67 +11,67 @@ import { PrismaService } from 'src/utils/prisma.service';
 export class EmployeesService {
   constructor(private db: PrismaService) {}
   async create(body: CreateEmployeeDto) {
-    const checkExistPhoneNumber = await this.db.employee.findFirst({
+    const checkExistPhoneNumber = await this.db.seller.findFirst({
       where: { phone_number: body?.phone_number },
     });
     if (checkExistPhoneNumber) {
       throw new ConflictException(
-        'Для создания сотрудника используйте уникальный номер телефона',
+        'Для создания продавца используйте уникальный номер телефона',
       );
     }
-    const employer = await this.db.employee.create({
+    const seller = await this.db.seller.create({
       data: { ...body },
     });
 
-    return employer;
+    return seller;
   }
 
   async findAll() {
-    const employees = await this.db.employee.findMany();
-    return employees;
+    const sellers = await this.db.seller.findMany();
+    return sellers;
   }
 
   async findOne(id: number) {
-    const employer = await this.db.employee.findFirst({
-      where: { employee_code: id },
+    const seller = await this.db.seller.findFirst({
+      where: { seller_code: id },
     });
-    return employer;
+    return seller;
   }
 
   async update(id: number, body: UpdateEmployeeDto) {
-    const updatedEmployer = await this.db.employee.update({
-      where: { employee_code: id },
+    const updatedSeller = await this.db.seller.update({
+      where: { seller_code: id },
       data: { ...body },
     });
-    if (!updatedEmployer) {
-      throw new NotFoundException('Employer not found');
+    if (!updatedSeller) {
+      throw new NotFoundException('Продавец не найден');
     }
-    return updatedEmployer;
+    return updatedSeller;
   }
 
   async remove(id: number) {
-    const employer = await this.db.employee.findUnique({
-      where: { employee_code: id },
-      include: { contract: true },
+    const seller = await this.db.seller.findUnique({
+      where: { seller_code: id },
+      include: { order: true },
     });
 
-    if (employer) {
-      if (employer.contract.length > 0) {
+    if (seller) {
+      if (seller.order.length > 0) {
         throw new ConflictException(
-          `Работодатель ${
-            employer.surname + ' ' + employer.name
-          } имеет активные кредиты. Его нельзя удалить. (Сначала удалите контракты связанные с этим работодателем)`,
+          `Продавец ${
+            seller.surname + ' ' + seller.name
+          } имеет активные заказы. Его нельзя удалить. (Сначала удалите заказы связанные с этим продавцом)`,
         );
       }
 
-      const deletedEmployer = await this.db.employee.delete({
-        where: { employee_code: id },
+      const deletedSeller = await this.db.seller.delete({
+        where: { seller_code: id },
       });
-      return `Работодатель ${
-        deletedEmployer.surname + ' ' + deletedEmployer.name
-      } успешно удален, и контракты, связанные с ним, также удалены.`;
+      return `Продавец ${
+        deletedSeller.surname + ' ' + deletedSeller.name
+      } успешно удален, и заказы, связанные с ним, также удалены.`;
     }
 
-    throw new NotFoundException(`Работодатель ${id} не найден.`);
+    throw new NotFoundException(`Продавец ${id} не найден.`);
   }
 }

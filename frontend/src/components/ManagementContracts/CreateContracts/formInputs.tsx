@@ -1,5 +1,5 @@
 import { DatePicker, Input, Select } from "antd";
-import { Rule } from "antd/es/form";
+import { Rule, RuleObject } from "antd/es/form";
 import {
   useGetAllClientsQuery,
   useGetAllEmployeesQuery,
@@ -11,30 +11,51 @@ import { IPledge } from "../../../store/api/pledges/types";
 import { IClient } from "../../../store/api/clients/types";
 import locale from "antd/es/date-picker/locale/ru_RU";
 
-export const FormInputs = () => {
+export const FormInputs = ({form}) => {
   const { data: clientsData } = useGetAllClientsQuery();
   const { data: pledgesData } = useGetAllPledgesQuery();
   const { data: employeesData } = useGetAllEmployeesQuery();
 
+  const validateQuantity = (rule: RuleObject, value: any) => {
+    const productCode = form.getFieldValue("product_code");
+    const selectedProduct = pledgesData?.find((pledge: IPledge) => pledge.product_code === productCode);
+
+    if (selectedProduct && value > selectedProduct.quanity) {
+      return Promise.reject(`Количество не может превышать ${selectedProduct.quanity}`);
+    }
+    
+    return Promise.resolve();
+  };
   const formInputs = [
     {
-      label: "Сумма кредита",
-      name: "contract_amount",
+      label: "Дата доставки",
+      name: "delivery_date",
       rules: [
         {
           required: true,
-          message: "Пожалуйста, введите сумму кредита!",
+          message: "Пожалуйста, введите дату доставки!",
+        },
+      ] as Rule[],
+      node: <DatePicker />,
+    },
+    {
+      label: "Метод доставки",
+      name: "delivery_method",
+      rules: [
+        {
+          required: true,
+          message: "Пожалуйста, введите метод доставки!",
         },
       ] as Rule[],
       node: <Input />,
     },
     {
-      label: "Срок кредитования (в месяцах)",
-      name: "contract_term",
+      label: "Статус заказа",
+      name: "status",
       rules: [
         {
           required: true,
-          message: "Пожалуйста, введите срок кредитования в месяцах",
+          message: "Пожалуйста, введите статус заказа!",
         },
       ] as Rule[],
       node: <Input />,
@@ -45,7 +66,7 @@ export const FormInputs = () => {
       rules: [
         {
           required: true,
-          message: "Пожалуйста, введите клиента!",
+          message: "Пожалуйста, выберите клиента!",
         },
       ] as Rule[],
       options: clientsData?.map((client: IClient) => ({
@@ -63,47 +84,61 @@ export const FormInputs = () => {
       ),
     },
     {
-      label: "Имя кредита",
-      name: "credit_code",
+      label: "Продукт",
+      name: "product_code",
       rules: [
         {
           required: true,
-          message: "Пожалуйста, введите имя кредита!",
+          message: "Пожалуйста, выберите продукт",
         },
       ] as Rule[],
       options: pledgesData?.map((pledge: IPledge) => ({
-        label: pledge.credit_name,
-        value: pledge.credit_code,
+        label: pledge.product_name,
+        value: pledge.product_code,
       })),
       node: (
         <Select>
           {pledgesData?.map((pledge: IPledge) => (
-            <Select.Option key={pledge.credit_code} value={pledge.credit_code}>
-              {pledge.credit_name}
+            <Select.Option key={pledge.product_code} value={pledge.product_code}>
+              {'1 ' +pledge.product_name + ' стоит ' + pledge.price + ' Руб.'}
             </Select.Option>
           ))}
         </Select>
       ),
     },
     {
-      label: "Сотрудник",
-      name: "employee_code",
+      label: "Количество продукта",
+      name: "quanity",
       rules: [
         {
           required: true,
-          message: "Пожалуйста, введите сотрудника!",
+          message: "Пожалуйста, введите количество продукта!",
+        },
+        {
+          validator: validateQuantity, // Используем валидатор для ограничения количества
+        },
+      ] as Rule[],
+      node: <Input />,
+    },
+    {
+      label: "Продавец",
+      name: "seller_code",
+      rules: [
+        {
+          required: true,
+          message: "Пожалуйста, выберите продавца!",
         },
       ] as Rule[],
       options: employeesData?.map((employee: IEmployee) => ({
         label: employee.surname,
-        value: employee.employee_code,
+        value: employee.seller_code,
       })),
       node: (
         <Select>
           {employeesData?.map((employee: IEmployee) => (
             <Select.Option
-              key={employee.employee_code}
-              value={employee.employee_code}
+              key={employee.seller_code}
+              value={employee.seller_code}
             >
               {employee.surname} {employee.name} {employee.lastname}
             </Select.Option>
