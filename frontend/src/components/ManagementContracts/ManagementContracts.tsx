@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Popconfirm, Button, Input } from "antd";
+import { Form, Popconfirm, Button, Input, DatePicker } from "antd";
 import { EditableCell } from "./EditableCell";
 import {
   ActionsTableWrapper,
@@ -21,13 +21,15 @@ import {
 import { IClient } from "../../store/api/clients/types";
 import { IPledge } from "../../store/api/pledges/types";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
 
 export const ManagementContracts = () => {
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = useState("");
-
+  const [startDate, setStartDate] = useState(dayjs().startOf('month').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'));
+  const [endDate, setEndDate] = useState(dayjs().endOf('month').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'));
   const [form] = Form.useForm<IContract>();
-  const { data: contractsData, refetch } = useGetAllContractsQuery();
+  const { data: contractsData, refetch } = useGetAllContractsQuery({ startDate, endDate});
   const { data: clientsData } = useGetAllClientsQuery();
   const { data: pledgesData } = useGetAllPledgesQuery();
   const { data: employeesData } = useGetAllEmployeesQuery();
@@ -250,14 +252,14 @@ export const ManagementContracts = () => {
               <Button>Удалить</Button>
             </Popconfirm>
 
-            {/* <Button type="primary">
+            <Button type="primary">
               <Link
                 target="_blank"
-                to={`http://localhost:3000/uploads/${record.contract_code}.pdf`}
+                to={`http://localhost:3000/uploads/${record.order_code}.pdf`}
               >
                 Экспортировать
               </Link>
-            </Button> */}
+            </Button>
           </ActionsTableWrapper>
         );
       },
@@ -290,6 +292,16 @@ export const ManagementContracts = () => {
           placeholder="Найти..."
           onChange={(e) => handleSearch(e.target.value)}
           style={{ width: 200 }}
+        />
+
+         <DatePicker.RangePicker
+          onChange={(dates) => {
+            if (dates && dates.length === 2) {
+              setStartDate(dayjs(dates[0]).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'));
+              setEndDate(dayjs(dates[1]).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'));
+            }
+          }}
+          defaultValue={[dayjs(startDate), dayjs(endDate)]}
         />
       </ManageButtonsWrapper>
 

@@ -69,7 +69,7 @@ export class ContractsService {
         product: true,
       },
     });
-    //await this.genPDF.generatePDF(order);
+    await this.genPDF.generatePDF(order);
 
     return order;
   }

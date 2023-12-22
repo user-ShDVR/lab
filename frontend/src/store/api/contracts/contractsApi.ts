@@ -29,8 +29,8 @@ export const contractsApi = createApi({
       },
     }),
 
-    getAllContracts: builder.query<IContract[], void>({
-      query: () => "contracts",
+    getAllContracts: builder.query<IContract[], {startDate: string, endDate: string}>({
+      query: ({startDate, endDate}) => `contracts?startDate=${startDate}&endDate=${endDate}`,
     }),
 
     updateContract: builder.mutation<
