@@ -99,17 +99,6 @@ export const ManagementEmployees = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "seller_code",
-      width: "2%",
-      sorter: (a: IEmployee, b: IEmployee) => {
-        const aCode = String(a.seller_code);
-        const bCode = String(b.seller_code);
-        return aCode.localeCompare(bCode);
-      },
-      sortDirections: ["ascend", "descend"],
-    },
-    {
       title: "Фамилия",
       dataIndex: "surname",
       width: "15%",

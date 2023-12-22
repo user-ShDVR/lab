@@ -130,14 +130,17 @@ export const ManagementContracts = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "order_code",
-      width: "1%",
-      sorter: (a: IContract, b: IContract) => {
-        const codeA = a.order_code?.toString() || "";
-        const codeB = b.order_code?.toString() || "";
-        return codeA.localeCompare(codeB);
+      title: "Товар",
+      dataIndex: "product_code",
+      width: "15%",
+      editable: true,
+      render: (productCode: IClient | number) => {
+        const product = pledgesData?.find(
+          (emp) => emp.product_code === productCode
+        );
+        return `${product?.product_name}` || productCode;
       },
+
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -179,20 +182,6 @@ export const ManagementContracts = () => {
       dataIndex: "status",
       width: "8%",
       editable: true,
-    },
-    {
-      title: "Товар",
-      dataIndex: "product_code",
-      width: "15%",
-      editable: true,
-      render: (productCode: IClient | number) => {
-        const product = pledgesData?.find(
-          (emp) => emp.product_code === productCode
-        );
-        return `${product?.product_name}` || productCode;
-      },
-
-      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Покупатель",

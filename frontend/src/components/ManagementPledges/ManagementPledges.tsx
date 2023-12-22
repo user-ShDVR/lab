@@ -81,19 +81,6 @@ export const ManagementPledges = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "product_code",
-      width: "1%",
-      sorter: (a: IPledge, b: IPledge) => {
-        if (!isNaN(Number(a.product_code)) && !isNaN(Number(b.product_code))) {
-          return Number(a.product_code) - Number(b.product_code);
-        } else {
-          return 0; // Handle non-numeric values appropriately
-        }
-      },
-      sortDirections: ["ascend", "descend"],
-    },
-    {
       title: "Название",
       dataIndex: "product_name",
       width: "15%",

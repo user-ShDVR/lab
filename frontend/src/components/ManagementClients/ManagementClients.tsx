@@ -82,17 +82,6 @@ export const ManagementClients = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "client_code",
-      width: "3%",
-      sorter: (a: IClient, b: IClient) => {
-        const codeA = a.client_code?.toString() || "";
-        const codeB = b.client_code?.toString() || "";
-        return codeA.localeCompare(codeB);
-      },
-      sortDirections: ["ascend", "descend"],
-    },
-    {
       title: "Фамилия",
       dataIndex: "surname",
       width: "10%",
